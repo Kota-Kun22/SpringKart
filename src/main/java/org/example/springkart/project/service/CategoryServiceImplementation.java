@@ -8,6 +8,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
 @Service
 public class CategoryServiceImplementation  implements CategoryService{
 
@@ -40,5 +42,20 @@ public class CategoryServiceImplementation  implements CategoryService{
         return "category with ID " + categoryId + " deleted successfully";
     }
 
-
+    @Override
+    public String updateCategory(Long categoryId, Category category) {
+        Category IdHasToBeUpdate = null;
+        for(Category  c: categoryList){
+            if(c.getCategoryId().equals(categoryId)){
+             IdHasToBeUpdate=c;
+             break;
+            }
+        }
+        if(IdHasToBeUpdate!=null){
+            IdHasToBeUpdate.setCategoryName(category.getCategoryName());
+            return "category with ID " + categoryId + " updated successfully";
+        }else{
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category with ID " + categoryId + " not found");
+        }
+    }
 }

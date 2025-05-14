@@ -3,6 +3,7 @@ package org.example.springkart.project.Controller;
 
 import org.example.springkart.project.model.Category;
 import org.example.springkart.project.service.CategoryService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,8 +11,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+/** RequestMapping let the developer set the URL patterns  */
 @RestController
+@RequestMapping("/api")//this is the request mapping on the class or controller level which let us not to repeat /api in every address
 public class CatergoryController {
+
 
     private CategoryService categoryService;
 
@@ -21,21 +25,27 @@ public class CatergoryController {
         this.categoryService = categoryService;
     }
 
-    @GetMapping("/api/public/categories")
+    //@GetMapping("/api/public/categories")
+    /**
+     * with the help of Request mapping, I don't have to write the specific Mapping like get and post this is on method level
+     * */
+    @RequestMapping(value = "/public/categories",method = RequestMethod.GET)
     public ResponseEntity<List<Category>> getAllCategory(){
 
         List<Category> categories= categoryService.getAllCategory();
        return  new ResponseEntity(categories,HttpStatus.OK);
     }
 
-    @PostMapping("/api/public/categories")
+    //@PostMapping("/api/public/categories")
+    @RequestMapping(value = "/public/categories",method = RequestMethod.POST)
     public ResponseEntity<String> createCategory(@RequestBody Category category){
         categoryService.createCategory(category);
 
         return  new ResponseEntity<>("Category created successfully", HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/api/admin/categories/{categoryId}")
+    //@DeleteMapping("/api/admin/categories/{categoryId}")
+    @RequestMapping(value = "/admin/categories/{categoryId}",method = RequestMethod.DELETE)
     public ResponseEntity<String> deleteCategory(@PathVariable  Long categoryId){
 
         try{
@@ -47,6 +57,18 @@ public class CatergoryController {
         }
     }
 
+    //@PutMapping("/api/admin/categories/{categoryId}")
+    @RequestMapping(value = "/admin/categories/{categoryId}",method = RequestMethod.PUT)
+    public ResponseEntity<String> updateCategory(@PathVariable Long categoryId,@RequestBody Category category){
+//        categoryService.updateCategory(categoryId,category);
+//        return new ResponseEntity<>("Category updated successfully",HttpStatus.OK);
+        try{
+            String status= categoryService.updateCategory(categoryId,category);
+            return new ResponseEntity<>(status, HttpStatus.OK);
+        }catch (ResponseStatusException e){
+            return new ResponseEntity<>(e.getReason(),e.getStatusCode());
+        }
+    }
 
 
 }

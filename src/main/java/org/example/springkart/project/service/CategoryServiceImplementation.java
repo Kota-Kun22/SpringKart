@@ -1,7 +1,9 @@
 package org.example.springkart.project.service;
 
 import org.example.springkart.project.model.Category;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,4 +28,17 @@ public class CategoryServiceImplementation  implements CategoryService{
 
 
     }
+
+    @Override
+    public String deleteCategory(Long categoryId) {
+        Category category= categoryList.stream()
+                .filter(c-> c.getCategoryId().equals(categoryId))
+                .findFirst()
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Dont have this ID"));
+
+        categoryList.remove(category);
+        return "category with ID " + categoryId + " deleted successfully";
+    }
+
+
 }

@@ -1,28 +1,44 @@
 package org.example.springkart.project.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity(name="Categories_Table")
 public class Category {
 
-    private Long CategoryId;
-    private String CategoryName;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long categoryId;
+    private String categoryName;
 
-    public Category(String categoryName, Long categoryId) {
-        CategoryName = categoryName;
-        CategoryId = categoryId;
+    public Category() {
+        //this one here is for JPA
     }
 
+    public Category(String categoryName, Long categoryId) {
+        this.categoryId = categoryId;
+        this.categoryName = categoryName;
+    }
+
+
+
     public Long getCategoryId() {
-        return CategoryId;
+        return categoryId;
     }
 
     public void setCategoryId(Long categoryId) {
-        CategoryId = categoryId;
+        this.categoryId = categoryId;
     }
 
+
+
     public String getCategoryName() {
-        return CategoryName;
+        return categoryName;
     }
 
     public void setCategoryName(String categoryName) {
-        CategoryName = categoryName;
+        this.categoryName = categoryName;
     }
 }

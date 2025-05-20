@@ -1,5 +1,7 @@
 package org.example.springkart.project.service;
 
+import org.example.springkart.project.exception.APIException;
+import org.example.springkart.project.exception.ResourceNotFoundException;
 import org.example.springkart.project.model.Category;
 import org.example.springkart.project.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,12 @@ public class CategoryServiceImplementation  implements CategoryService{
 
     @Override
     public List<Category> getAllCategory() {
-        return categoryRepository.findAll();
+        List<Category> categoryList = categoryRepository.findAll();
+        if(categoryList.isEmpty()){
+            throw new APIException("No categories created till now");
+        }
+        return categoryList;
+
     }
 
     @Override
@@ -31,6 +38,10 @@ public class CategoryServiceImplementation  implements CategoryService{
 
 //        category.setCategoryId(nextId++);since in my entity I have generationType.IDENTITY database is responsible for auto-incrementing the primary key
 
+        Category savedCategory = categoryRepository.findByCategoryName(category.getCategoryName());
+        if(savedCategory!=null){
+            throw new APIException("Category with name " + category.getCategoryName() + " already exists!!!!");
+        }
         categoryRepository.save(category);
 
 
@@ -43,7 +54,7 @@ public class CategoryServiceImplementation  implements CategoryService{
         Category category= categoryList.stream()
                 .filter(c-> c.getCategoryId().equals(categoryId))
                 .findFirst()
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Dont have this ID"));
+                .orElseThrow(()-> new ResourceNotFoundException("Category","categoryId",categoryId));
 
         categoryRepository.delete(category);
         return "category with ID " + categoryId + " deleted successfully";
@@ -60,13 +71,15 @@ public class CategoryServiceImplementation  implements CategoryService{
 //            }
 //        }
 //        if(IdHasToBeUpdate!=null){
-////            IdHasToBeUpdate.setCategoryName(category.getCategoryName());
+//            IdHasToBeUpdate.setCategoryName(category.getCategoryName());
 //              categoryRepository.save(category);
 //            return "category with ID  " + categoryId + " updated successfully";
 //        }else{
 //            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category with ID " + categoryId + " not found");
 //        }
-        Category existingCategory = categoryRepository.findById(categoryId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Category with ID " + categoryId + " not found"));
+        Category existingCategory = categoryRepository
+                .findById(categoryId)
+                .orElseThrow(()-> new ResourceNotFoundException("Category","categoryId",categoryId));
         existingCategory.setCategoryName(category.getCategoryName());
         categoryRepository.save(existingCategory);
         return "category with ID " + categoryId + " updated successfully";

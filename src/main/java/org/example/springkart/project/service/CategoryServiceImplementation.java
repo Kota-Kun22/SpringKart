@@ -79,7 +79,7 @@ public class CategoryServiceImplementation  implements CategoryService{
     }
 
     @Override
-    public String updateCategory(Long categoryId, Category category) {
+    public CategoryDTO updateCategory(Long categoryId, CategoryDTO categoryDto) {
 //        Category IdHasToBeUpdate = null;
 //        List<Category> categoryList = categoryRepository.findAll();
 //        for(Category  c: categoryList){
@@ -95,12 +95,22 @@ public class CategoryServiceImplementation  implements CategoryService{
 //        }else{
 //            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category with ID " + categoryId + " not found");
 //        }
-        Category existingCategory = categoryRepository
+
+        Category categoryUpdation = modelMapper.map(categoryDto,Category.class);
+
+         categoryUpdation = categoryRepository
                 .findById(categoryId)
                 .orElseThrow(()-> new ResourceNotFoundException("Category","categoryId",categoryId));
-        existingCategory.setCategoryName(category.getCategoryName());
-        categoryRepository.save(existingCategory);
-        return "category with ID " + categoryId + " updated successfully";
+
+
+
+        categoryUpdation.setCategoryName(categoryDto.getCategoryName());
+
+        Category updatedCategory= categoryRepository.save(categoryUpdation);
+        CategoryDTO UpdateCategoryDto = modelMapper.map(updatedCategory,CategoryDTO.class);
+
+//        return "category with ID " + categoryId + " updated successfully";
+       return  UpdateCategoryDto;
 
 
     }

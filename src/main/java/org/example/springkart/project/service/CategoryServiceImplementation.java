@@ -50,16 +50,18 @@ public class CategoryServiceImplementation  implements CategoryService{
     }
 
     @Override
-    public void createCategory(Category category) {
+    public CategoryDTO createCategory(CategoryDTO categoryDTO) {
 
 //        category.setCategoryId(nextId++);since in my entity I have generationType.IDENTITY database is responsible for auto-incrementing the primary key
+        Category category = modelMapper.map(categoryDTO,Category.class);
 
-        Category savedCategory = categoryRepository.findByCategoryName(category.getCategoryName());
-        if(savedCategory!=null){
+        Category CategoryFromDb = categoryRepository.findByCategoryName(category.getCategoryName());
+        if(CategoryFromDb!=null){
             throw new APIException("Category with name " + category.getCategoryName() + " already exists!!!!");
         }
-        categoryRepository.save(category);
-
+        Category savedCategory1= categoryRepository.save(category);
+        CategoryDTO savedCategoryDTO= modelMapper.map(savedCategory1,CategoryDTO.class);
+        return savedCategoryDTO;
 
     }
 

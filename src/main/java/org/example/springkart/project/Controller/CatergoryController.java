@@ -3,6 +3,7 @@ package org.example.springkart.project.Controller;
 
 import jakarta.validation.Valid;
 import org.example.springkart.project.model.Category;
+import org.example.springkart.project.payload.CategoryDTO;
 import org.example.springkart.project.payload.CategoryResponse;
 import org.example.springkart.project.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +41,12 @@ public class CatergoryController {
 
     //@PostMapping("/api/public/categories")
     @RequestMapping(value = "/public/categories",method = RequestMethod.POST)
-    public ResponseEntity<String> createCategory( @Valid @RequestBody Category category){
-        categoryService.createCategory(category);
+    public ResponseEntity<CategoryDTO> createCategory( @Valid @RequestBody CategoryDTO categoryDto){
 
-        return  new ResponseEntity<>("Category created successfully", HttpStatus.CREATED);
+
+        CategoryDTO savedCategoryDTO= categoryService.createCategory(categoryDto);
+
+        return  new ResponseEntity<>(savedCategoryDTO, HttpStatus.CREATED);
     }
 
     //@DeleteMapping("/api/admin/categories/{categoryId}")

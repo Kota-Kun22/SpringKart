@@ -66,16 +66,18 @@ public class CategoryServiceImplementation  implements CategoryService{
     }
 
     @Override
-    public String deleteCategory(Long categoryId) {
+    public CategoryDTO deleteCategory(Long categoryId) {
+
         List<Category> categoryList = categoryRepository.findAll();//here we are loading everything from the database which is not efficient
         //plus if we are just doing categoryRepository.findAll().stream().filter(...).findFirst() then we are streaming in-memory java object, not databse row
+
         Category category= categoryList.stream()
                 .filter(c-> c.getCategoryId().equals(categoryId))
                 .findFirst()
                 .orElseThrow(()-> new ResourceNotFoundException("Category","categoryId",categoryId));
 
         categoryRepository.delete(category);
-        return "category with ID " + categoryId + " deleted successfully";
+        return modelMapper.map(category,CategoryDTO.class);
     }
 
     @Override

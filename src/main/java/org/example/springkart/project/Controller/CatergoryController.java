@@ -3,6 +3,7 @@ package org.example.springkart.project.Controller;
 
 import jakarta.validation.Valid;
 import org.example.springkart.project.model.Category;
+import org.example.springkart.project.payload.CategoryResponse;
 import org.example.springkart.project.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,8 +34,8 @@ public class CatergoryController {
     @RequestMapping(value = "/public/categories",method = RequestMethod.GET)
     public ResponseEntity<List<Category>> getAllCategory(){
 
-        List<Category> categories= categoryService.getAllCategory();
-       return  new ResponseEntity(categories,HttpStatus.OK);
+        CategoryResponse categoriesResponse= categoryService.getAllCategory();
+       return  new ResponseEntity(categoriesResponse,HttpStatus.OK);
     }
 
     //@PostMapping("/api/public/categories")

@@ -3,7 +3,10 @@ package org.example.springkart.project.service;
 import org.example.springkart.project.exception.APIException;
 import org.example.springkart.project.exception.ResourceNotFoundException;
 import org.example.springkart.project.model.Category;
+import org.example.springkart.project.payload.CategoryDTO;
+import org.example.springkart.project.payload.CategoryResponse;
 import org.example.springkart.project.repository.CategoryRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -21,15 +24,28 @@ public class CategoryServiceImplementation  implements CategoryService{
     @Autowired
     CategoryRepository categoryRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     private long nextId = 1L;
 
     @Override
-    public List<Category> getAllCategory() {
+    public CategoryResponse getAllCategory() {
         List<Category> categoryList = categoryRepository.findAll();
         if(categoryList.isEmpty()){
             throw new APIException("No categories created till now");
         }
-        return categoryList;
+
+        //below here for every category in the list we are mapping it to the that of category DTO for that we are using Stream here and this model mapping is done with the help of model mapper
+        List<CategoryDTO> categoryDTOs= categoryList.stream()
+                .map(category->modelMapper.map(category,CategoryDTO.class))
+                .toList();
+
+        CategoryResponse categoryResponse = new CategoryResponse();
+
+        categoryResponse.setContent(categoryDTOs);
+
+        return categoryResponse;
 
     }
 

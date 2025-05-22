@@ -2,6 +2,7 @@ package org.example.springkart.project.Controller;
 
 
 import jakarta.validation.Valid;
+import org.example.springkart.project.config.AppConstants;
 import org.example.springkart.project.model.Category;
 import org.example.springkart.project.payload.CategoryDTO;
 import org.example.springkart.project.payload.CategoryResponse;
@@ -33,9 +34,12 @@ public class CatergoryController {
      * with the help of Request mapping, I don't have to write the specific Mapping like get and post this is on method level
      * */
     @RequestMapping(value = "/public/categories",method = RequestMethod.GET)
-    public ResponseEntity<List<Category>> getAllCategory(){
+    public ResponseEntity<List<Category>> getAllCategory(
+            @RequestParam(name="pageNumber",defaultValue = AppConstants.PAGE_NUMBER)Integer pageNumber,
+            @RequestParam(name="pageSize",defaultValue = AppConstants.PAGE_SIZE)Integer pageSize
+    ){
 
-        CategoryResponse categoriesResponse= categoryService.getAllCategory();
+        CategoryResponse categoriesResponse= categoryService.getAllCategory(pageNumber,pageSize);
        return  new ResponseEntity(categoriesResponse,HttpStatus.OK);
     }
 

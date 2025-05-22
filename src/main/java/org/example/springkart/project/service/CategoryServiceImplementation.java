@@ -8,6 +8,9 @@ import org.example.springkart.project.payload.CategoryResponse;
 import org.example.springkart.project.repository.CategoryRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -30,8 +33,12 @@ public class CategoryServiceImplementation  implements CategoryService{
     private long nextId = 1L;
 
     @Override
-    public CategoryResponse getAllCategory() {
-        List<Category> categoryList = categoryRepository.findAll();
+    public CategoryResponse getAllCategory(Integer pageNumber, Integer pageSize) {
+
+        Pageable pageDetails= PageRequest.of(pageNumber-1,pageSize);
+        Page<Category> categoryPage = categoryRepository.findAll(pageDetails);//here i have the apage which the user requsted with the pageNo and pagesize where categroyPage is the paginated object help by the jpa to get the page no and pgsize  ;
+
+        List<Category> categoryList =categoryPage.getContent();//here get content will get he
         if(categoryList.isEmpty()){
             throw new APIException("No categories created till now");
         }
@@ -44,6 +51,12 @@ public class CategoryServiceImplementation  implements CategoryService{
         CategoryResponse categoryResponse = new CategoryResponse();
 
         categoryResponse.setContent(categoryDTOs);
+        //below here we are setting the page details for the response
+        categoryResponse.setPageNumber(categoryPage.getNumber()+1);
+        categoryResponse.setPageSize(categoryPage.getSize());
+        categoryResponse.setTotalElements(categoryPage.getTotalElements());
+        categoryResponse.setTotalPages(categoryPage.getTotalPages());
+        categoryResponse.setLastPage(categoryPage.isLast());
 
         return categoryResponse;
 

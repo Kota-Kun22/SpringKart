@@ -8,9 +8,11 @@ import org.example.springkart.project.payload.CategoryResponse;
 import org.example.springkart.project.repository.CategoryRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -33,9 +35,16 @@ public class CategoryServiceImplementation  implements CategoryService{
     private long nextId = 1L;
 
     @Override
-    public CategoryResponse getAllCategory(Integer pageNumber, Integer pageSize) {
+    public CategoryResponse getAllCategory(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
 
-        Pageable pageDetails= PageRequest.of(pageNumber-1,pageSize);
+        Sort sortByAndOrder;
+        if (sortOrder.equalsIgnoreCase("asc")) {
+            sortByAndOrder = Sort.by(sortBy).ascending();
+        } else {
+            sortByAndOrder = Sort.by(sortBy).descending();
+        }
+
+        Pageable pageDetails= PageRequest.of(pageNumber-1,pageSize,sortByAndOrder);
         Page<Category> categoryPage = categoryRepository.findAll(pageDetails);//here i have the apage which the user requsted with the pageNo and pagesize where categroyPage is the paginated object help by the jpa to get the page no and pgsize  ;
 
         List<Category> categoryList =categoryPage.getContent();//here get content will get he
@@ -57,6 +66,8 @@ public class CategoryServiceImplementation  implements CategoryService{
         categoryResponse.setTotalElements(categoryPage.getTotalElements());
         categoryResponse.setTotalPages(categoryPage.getTotalPages());
         categoryResponse.setLastPage(categoryPage.isLast());
+        categoryResponse.setSortBy(sortBy);
+        categoryResponse.setSortOrder(sortOrder);
 
         return categoryResponse;
 

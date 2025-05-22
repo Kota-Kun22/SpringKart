@@ -18,5 +18,7 @@ public class CategoryResponse {
      private long totalElements;
      private int totalPages;
      private boolean lastPage;
+     private String sortBy;
+     private String sortOrder;
 
 }

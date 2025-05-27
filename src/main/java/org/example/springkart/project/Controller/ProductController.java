@@ -22,4 +22,15 @@ public class ProductController {
       ProductDTO savedProductDTO= productService.addProduct(product,categoryId);
       return new ResponseEntity<>(savedProductDTO, HttpStatus.CREATED);
     }
+
+    @GetMapping("/public/product")
+    public ResponseEntity<ProductResponse> getProductById(){
+
+        ProductResponse productResponse= productService.getAllProducts();
+        return new ResponseEntity<>(productResponse, HttpStatus.OK);
+    }
+
+
+
+
 }

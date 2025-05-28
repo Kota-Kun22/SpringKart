@@ -101,5 +101,29 @@ public class ProductServiceImplementation implements ProductService {
 
     }
 
+    @Override
+    public ProductDTO deleteProduct(Long productId) {
+
+        List<Product> productList = productRepository.findAll();
+        // For-loop to find the product by ID
+//        Product productToDelete = null;
+//        for (Product product : productList) {
+//            if (product.getProductId().equals(productId)) {
+//                productToDelete = product;
+//                break;
+//            }
+//        }
+//        // If not found, throw exception
+//        if (productToDelete == null) {
+//            throw new ResourceNotFoundException("Product", "productId", productId);
+        Product productToDelete= productList.stream()
+                .filter(p-> p.getProductId().equals(productId))
+                .findFirst()
+                .orElseThrow(()-> new ResourceNotFoundException("Product","productId",productId));
+
+        productRepository.delete(productToDelete);
+        return modelMapper.map(productToDelete,ProductDTO.class);
+    }
+
 
 }

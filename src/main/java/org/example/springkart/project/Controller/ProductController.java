@@ -1,5 +1,6 @@
 package org.example.springkart.project.Controller;
 
+import jakarta.validation.Valid;
 import org.example.springkart.project.model.Product;
 import org.example.springkart.project.payload.ProductDTO;
 import org.example.springkart.project.payload.ProductResponse;
@@ -20,7 +21,7 @@ public class ProductController {
     ProductService productService;
 
     @PostMapping("/admin/categories/{categoryId}/product")
-    public ResponseEntity<ProductDTO> addProduct(@RequestBody ProductDTO productDto, @PathVariable Long categoryId){
+    public ResponseEntity<ProductDTO> addProduct(@Valid  @RequestBody ProductDTO productDto, @PathVariable Long categoryId){
 
       ProductDTO savedProductDTO= productService.addProduct(productDto,categoryId);
       return new ResponseEntity<>(savedProductDTO, HttpStatus.CREATED);
@@ -49,7 +50,7 @@ public class ProductController {
     }
 
     @PutMapping("/admin/products/{productId}")
-    public ResponseEntity<ProductDTO> updateProduct(@RequestBody ProductDTO productDto,@PathVariable  Long productId ){
+    public ResponseEntity<ProductDTO> updateProduct(@Valid @RequestBody ProductDTO productDto,@PathVariable  Long productId ){
 
         ProductDTO updateProductDto= productService.updateProduct(productId,productDto);
         return new ResponseEntity<>(updateProductDto, HttpStatus.OK);

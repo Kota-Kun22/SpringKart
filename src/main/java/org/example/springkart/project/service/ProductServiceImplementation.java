@@ -1,5 +1,6 @@
 package org.example.springkart.project.service;
 
+import org.example.springkart.project.exception.APIException;
 import org.example.springkart.project.exception.ResourceNotFoundException;
 import org.example.springkart.project.model.Category;
 import org.example.springkart.project.model.Product;
@@ -41,15 +42,26 @@ public class ProductServiceImplementation implements ProductService {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
 
-        Product product = modelMapper.map(productDto, Product.class);
-
-        product.setCategory(category);
-        product.setImage("default.png");
-        double specialPrice= product.getPrice() - ((product.getDiscount()*0.01)* product.getPrice());
-        product.setSpecialPrice(specialPrice);
-        Product savedProduct = productRepository.save(product);
-        ProductDTO savedProductDTO = modelMapper.map(savedProduct, ProductDTO.class);
-        return savedProductDTO;
+        boolean isProductNotPresent= true;
+        List<Product> products= category.getProducts();
+        for(int i=0;i<products.size();i++){
+            if(products.get(i).getProductName().equalsIgnoreCase(productDto.getProductName())){
+                isProductNotPresent=false;
+                break;
+            }
+        }
+        if(isProductNotPresent) {
+            Product product = modelMapper.map(productDto, Product.class);
+            product.setCategory(category);
+            product.setImage("default.png");
+            double specialPrice = product.getPrice() - ((product.getDiscount() * 0.01) * product.getPrice());
+            product.setSpecialPrice(specialPrice);
+            Product savedProduct = productRepository.save(product);
+            ProductDTO savedProductDTO = modelMapper.map(savedProduct, ProductDTO.class);
+            return savedProductDTO;
+        }else{
+            throw new APIException("Product with name " + productDto.getProductName() + " already exists!!!!");
+        }
     }
 
     @Override
@@ -59,6 +71,9 @@ public class ProductServiceImplementation implements ProductService {
         List<ProductDTO> productDtoList = productList.stream()
                 .map(product-> modelMapper.map(product, ProductDTO.class))
                 .toList();
+        if(productList.isEmpty()){
+            throw new APIException("No products created till now");
+        }
 
         ProductResponse productResponse = new ProductResponse();
         productResponse.setContent(productDtoList);

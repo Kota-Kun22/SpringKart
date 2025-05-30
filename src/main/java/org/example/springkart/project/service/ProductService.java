@@ -1,12 +1,11 @@
 package org.example.springkart.project.service;
 
-import org.example.springkart.project.model.Product;
 import org.example.springkart.project.payload.ProductDTO;
 import org.example.springkart.project.payload.ProductResponse;
 
 public interface ProductService {
 
-    ProductDTO addProduct(Product product, Long categoryId);
+    ProductDTO addProduct(ProductDTO product, Long categoryId);
 
     ProductResponse getAllProducts();
 
@@ -14,7 +13,7 @@ public interface ProductService {
 
     ProductResponse searchByKeyword(String keyword);
 
-    ProductDTO updateProduct(Long productId, Product product);
+    ProductDTO updateProduct(Long productId, ProductDTO productDto);
 
     ProductDTO deleteProduct(Long productId);
 }

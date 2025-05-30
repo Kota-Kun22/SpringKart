@@ -11,16 +11,16 @@ import org.example.springkart.project.repository.ProductRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class ProductServiceImplementation implements ProductService {
@@ -65,48 +65,103 @@ public class ProductServiceImplementation implements ProductService {
     }
 
     @Override
-    public ProductResponse getAllProducts() {
+    public ProductResponse getAllProducts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
 
-        List<Product> productList= productRepository.findAll();
+        Sort sortByAndOrder;
+        if (sortOrder.equalsIgnoreCase("asc")) {
+            sortByAndOrder = Sort.by(sortBy).ascending();
+        } else {
+            sortByAndOrder = Sort.by(sortBy).descending();
+        }
+        Pageable pageDetails= PageRequest.of(pageNumber-1, pageSize, sortByAndOrder);
+
+        Page<Product> productPage= productRepository.findAll(pageDetails);
+        List<Product> productList= productPage.getContent();
+        if(productList.isEmpty())
+        {
+            throw new APIException("No products found");
+        }
+
         List<ProductDTO> productDtoList = productList.stream()
                 .map(product-> modelMapper.map(product, ProductDTO.class))
                 .toList();
-        if(productList.isEmpty()){
-            throw new APIException("No products created till now");
-        }
 
         ProductResponse productResponse = new ProductResponse();
         productResponse.setContent(productDtoList);
+
+        //below here we are setting the page details for the response
+        productResponse.setPageNumber(productPage.getNumber() + 1);
+        productResponse.setPageSize(productPage.getSize());
+        productResponse.setTotalElements(productPage.getTotalElements());
+        productResponse.setTotalPages(productPage.getTotalPages());
+        productResponse.setLastPage(productPage.isLast());
+        productResponse.setSortBy(sortBy);
+        productResponse.setSortOrder(sortOrder);
+
         return productResponse;
     }
 
     @Override
-    public ProductResponse searchByCategory(Long categoryId) {
+    public ProductResponse searchByCategory(Long categoryId, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
 
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
 
-        List<Product> productList= productRepository.findByCategoryOrderByPriceAsc(category);
+        Sort sortByAndOrder;
+        if (sortOrder.equalsIgnoreCase("asc")) {
+            sortByAndOrder = Sort.by(sortBy).ascending();
+        } else {
+            sortByAndOrder = Sort.by(sortBy).descending();
+        }
+        Pageable pageDetails= PageRequest.of(pageNumber-1, pageSize, sortByAndOrder);
 
 
-        List<ProductDTO> productDtoList = productList.stream()
+        Page<Product> productPage= productRepository.findByCategoryOrderByPriceAsc(category,pageDetails);
+
+
+        List<ProductDTO> productDtoList = productPage.stream()
                 .map(product-> modelMapper.map(product, ProductDTO.class))
                 .toList();
         ProductResponse productResponse = new ProductResponse();
+
         productResponse.setContent(productDtoList);
+        productResponse.setPageNumber(productPage.getNumber() + 1);
+        productResponse.setPageSize(productPage.getSize());
+        productResponse.setTotalElements(productPage.getTotalElements());
+        productResponse.setTotalPages(productPage.getTotalPages());
+        productResponse.setLastPage(productPage.isLast());
+        productResponse.setSortBy(sortBy);
+        productResponse.setSortOrder(sortOrder);
 
         return productResponse;
     }
 
     @Override
-    public ProductResponse searchByKeyword(String keyword) {
+    public ProductResponse searchByKeyword(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
 
-        List<Product> productList= productRepository.findByProductNameContainingIgnoreCase( keyword);
+        Sort sortByAndOrder;
+        if (sortOrder.equalsIgnoreCase("asc")) {
+            sortByAndOrder = Sort.by(sortBy).ascending();
+        } else {
+            sortByAndOrder = Sort.by(sortBy).descending();
+        }
+        Pageable pageDetails= PageRequest.of(pageNumber-1, pageSize, sortByAndOrder);
+
+        Page<Product> productList= productRepository.findByProductNameContainingIgnoreCase( keyword,pageDetails);
         List<ProductDTO> productDtoList = productList.stream()
                 .map(product-> modelMapper.map(product, ProductDTO.class)).toList();
 
         ProductResponse productResponse = new ProductResponse();
         productResponse.setContent(productDtoList);
+
+        productResponse.setPageNumber(productList.getNumber() + 1);
+        productResponse.setPageSize(productList.getSize());
+        productResponse.setTotalElements(productList.getTotalElements());
+        productResponse.setTotalPages(productList.getTotalPages());
+        productResponse.setLastPage(productList.isLast());
+        productResponse.setSortBy(sortBy);
+        productResponse.setSortOrder(sortOrder);
+
         return productResponse;
     }
 

@@ -12,4 +12,12 @@ import java.util.List;
 public class ProductResponse {
 
     private List<ProductDTO> content;
+
+    private int pageNumber;
+    private int pageSize;
+    private long totalElements;
+    private int totalPages;
+    private boolean lastPage;
+    private String sortBy;
+    private String sortOrder;
 }

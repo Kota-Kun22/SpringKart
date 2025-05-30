@@ -1,6 +1,7 @@
 package org.example.springkart.project.Controller;
 
 import jakarta.validation.Valid;
+import org.example.springkart.project.config.AppConstants;
 import org.example.springkart.project.model.Product;
 import org.example.springkart.project.payload.ProductDTO;
 import org.example.springkart.project.payload.ProductResponse;
@@ -28,23 +29,40 @@ public class ProductController {
     }
 
     @GetMapping("/public/product")
-    public ResponseEntity<ProductResponse> getProductById(){
+    public ResponseEntity<ProductResponse> getProductById(
+            @RequestParam(name="pageNumber",defaultValue = AppConstants.PAGE_NUMBER,required = false)Integer pageNumber,
+            @RequestParam(name="pageSize",defaultValue = AppConstants.PAGE_SIZE,required = false)Integer pageSize,
+            @RequestParam(name="sort",defaultValue = AppConstants.PRODUCT_SORT_BY,required = false)String sortBy,
+            @RequestParam(name="sortOrder",defaultValue = AppConstants.SORT_ORDER,required = false)String sortOrder
+    ){
 
-        ProductResponse productResponse= productService.getAllProducts();
+        ProductResponse productResponse= productService.getAllProducts(pageNumber,pageSize,sortBy,sortOrder);
         return new ResponseEntity<>(productResponse, HttpStatus.OK);
     }
 
     @GetMapping("/public/categories/{categoryId}/products")
-    public ResponseEntity<ProductResponse> getProductByCategoryId(@PathVariable Long categoryId){
-
-        ProductResponse response= productService.searchByCategory(categoryId);
+    public ResponseEntity<ProductResponse> getProductByCategoryId(
+            @PathVariable Long categoryId,
+            @RequestParam(name="pageNumber",defaultValue = AppConstants.PAGE_NUMBER,required = false)Integer pageNumber,
+            @RequestParam(name="pageSize",defaultValue = AppConstants.PAGE_SIZE,required = false)Integer pageSize,
+            @RequestParam(name="sort",defaultValue = AppConstants.PRODUCT_SORT_BY,required = false)String sortBy,
+            @RequestParam(name="sortOrder",defaultValue = AppConstants.SORT_ORDER,required = false)String sortOrder)
+    {
+        ProductResponse response= productService.searchByCategory(categoryId,pageNumber,pageSize,sortBy,sortOrder);
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
 
     @GetMapping("/public/products/keyword/{keyword}")
-    public ResponseEntity<ProductResponse> getProductByKeyword(@PathVariable String keyword){
-        ProductResponse response= productService.searchByKeyword(keyword);
+    public ResponseEntity<ProductResponse> getProductByKeyword(
+            @PathVariable String keyword,
+            @RequestParam(name="pageNumber",defaultValue = AppConstants.PAGE_NUMBER,required = false)Integer pageNumber,
+            @RequestParam(name="pageSize",defaultValue = AppConstants.PAGE_SIZE,required = false)Integer pageSize,
+            @RequestParam(name="sort",defaultValue = AppConstants.PRODUCT_SORT_BY,required = false)String sortBy,
+            @RequestParam(name="sortOrder",defaultValue = AppConstants.SORT_ORDER,required = false)String sortOrder
+            )
+    {
+        ProductResponse response= productService.searchByKeyword(keyword,pageNumber,pageSize,sortBy,sortOrder);
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }

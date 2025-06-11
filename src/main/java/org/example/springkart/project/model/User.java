@@ -58,6 +58,8 @@ public class User {
     private Set<Role> roles = new HashSet<>();
 
 
+    @Getter
+    @Setter
     @ManyToMany(cascade={CascadeType.MERGE,CascadeType.PERSIST},fetch = FetchType.EAGER)
     @JoinTable(name= "user_address",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -66,7 +68,7 @@ public class User {
     private List<Address> addresses= new ArrayList<>();
 
 
-
+    @ToString.Exclude
     @OneToMany(mappedBy = "user",
             cascade = {CascadeType.MERGE,CascadeType.PERSIST},
             orphanRemoval = true )

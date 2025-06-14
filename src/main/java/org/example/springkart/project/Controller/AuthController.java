@@ -14,7 +14,9 @@ import org.example.springkart.project.security.resposne.MessageResponse;
 import org.example.springkart.project.security.resposne.UserInfoResponse;
 import org.example.springkart.project.security.services.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -73,13 +75,17 @@ public class AuthController {
         //now generating the token
 
         UserDetailsImpl userDetails= (UserDetailsImpl) authentication.getPrincipal();
-        String JwtToken = jwtUtils.generateTokenFromUserName(userDetails);
+
+        ResponseCookie JwtCookie = jwtUtils.generateJwtCookie(userDetails);
+
         List<String> role= userDetails.getAuthorities().stream()
                 .map(item ->item.getAuthority())
                 .collect(Collectors.toList());
 
-        UserInfoResponse resposne = new UserInfoResponse(userDetails.getId(),userDetails.getUsername(),JwtToken,role);
-        return ResponseEntity.ok(resposne);
+        UserInfoResponse resposne = new UserInfoResponse(userDetails.getId(),userDetails.getUsername(),role);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE,
+                JwtCookie.toString()).body(resposne);
 
     }
 

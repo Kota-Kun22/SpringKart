@@ -7,12 +7,17 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import org.example.springkart.project.security.services.UserDetailsImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.async.WebAsyncUtils;
+import org.springframework.web.util.WebUtils;
 
 import javax.crypto.SecretKey;
 import java.security.Key;
@@ -30,6 +35,9 @@ public class JwtUtils {
     @Value("${spring.app.jwtSecret}")
     private String jwtSecret;
 
+    @Value("${spring.app.jwtCookieName}")
+    private String JwtCookie;
+
 
     //Get the Jwt token from Header
     //Generating Token from UserName
@@ -37,22 +45,47 @@ public class JwtUtils {
     //Generate Signing Key
     //validate JWT Token
 
+
     //Getting the JWT Token from Header
-    public String getJwtFromHeader(HttpServletRequest request)
-    {
-        String bearerToken = request.getHeader("Authorization");
-        logger.info("Bearer Token: "+bearerToken);
-        if(bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);//7 because Bearer and a space (Bearer ) total 7
+//    public String getJwtFromHeader(HttpServletRequest request)
+//    {
+//        String bearerToken = request.getHeader("Authorization");
+//        logger.info("Bearer Token: "+bearerToken);
+//        if(bearerToken != null && bearerToken.startsWith("Bearer ")) {
+//            return bearerToken.substring(7);//7 because Bearer and a space (Bearer ) total 7
+//        }
+//        return null;
+//    }
+
+    public String getJwtFromCookies(HttpServletRequest request){
+
+        Cookie cookie= WebUtils.getCookie(request,JwtCookie);
+        if(cookie!=null)
+        {
+            return cookie.getValue();
+        }else
+        {
+            return null;
         }
-        return null;
+
+    }
+
+    public ResponseCookie generateJwtCookie(UserDetailsImpl userPrincipal)
+    {
+        String jwtToken= generateTokenFromUserName(userPrincipal.getUsername());
+       ResponseCookie cookie = ResponseCookie.from(JwtCookie,jwtToken)
+               .path("/api")
+               .maxAge(24*60*60)
+               .httpOnly(false)
+               .build();
+       return cookie;
     }
 
 
     //Generating Token from UserName
-    public String generateTokenFromUserName(UserDetails userDetails)
+    public String generateTokenFromUserName(String username)
     {
-       String username = userDetails.getUsername();
+       //String username = userDetails.getUsername();
        return Jwts.builder()
                .subject(username)
                .issuedAt(new Date())

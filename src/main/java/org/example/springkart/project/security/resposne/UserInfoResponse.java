@@ -27,7 +27,7 @@ public class UserInfoResponse {
 
     public UserInfoResponse(Long id, String username, List<String> role) {
         this.id = id;
-        this.token = token;
+        //this.token = token;
         this.roles = role;
         this.username = username;
     }

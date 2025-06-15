@@ -142,4 +142,13 @@ public class JwtUtils {
     }
 
 
+
+    public ResponseCookie getCleanJwtCookie()
+    {
+        ResponseCookie cookie = ResponseCookie.from(JwtCookie,null)
+                .path("/api")
+                .build();
+        return cookie;
+    }
+
 }

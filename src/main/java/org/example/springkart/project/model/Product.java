@@ -8,6 +8,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -39,5 +42,9 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "seller_id")
     private User user;
+
+
+    @OneToMany(mappedBy = "product",cascade = { CascadeType.PERSIST,CascadeType.MERGE},fetch = FetchType.EAGER)//mapped by is actually by the field name okay go check in the cartItem there will be product field name
+    private List<CartItem> products= new ArrayList<>();
 
 }

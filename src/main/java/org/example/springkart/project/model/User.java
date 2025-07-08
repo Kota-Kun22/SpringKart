@@ -75,4 +75,10 @@ public class User {
     private Set<Product> products;
 
 
+
+    @ToString.Exclude
+    @OneToOne(mappedBy = "user",cascade = {CascadeType.MERGE,CascadeType.PERSIST},orphanRemoval = true)
+    private Cart cart;
+
+
 }

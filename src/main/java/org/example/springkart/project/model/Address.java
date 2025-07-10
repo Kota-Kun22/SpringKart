@@ -20,7 +20,7 @@ public class Address {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long addressId;
+    private Long addressId;
 
     @NotBlank
     @Size(min = 5,message = "Street should be at least 5 characters")

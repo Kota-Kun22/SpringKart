@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
@@ -128,17 +129,23 @@ public class CartServiceImplementation  implements CartService{
            throw new APIException("No carts found");
        }
 
-       List<CartDTO> cartDTOList = carts.stream()
-               .map(cart-> {
-                   CartDTO cartDto= modelMapper.map(cart,CartDTO.class);
-                   List<ProductDTO> products = cart.getCartItems().stream()
-                           .map(p -> modelMapper.map(p.getProduct(),ProductDTO.class))
-                           .toList();
-                   cartDto.setProducts(products);
-                   return cartDto;
-               }).toList();
+        List<CartDTO> cartDTOs = carts.stream().map(cart -> {
+            CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
 
-       return cartDTOList;
+            List<ProductDTO> products = cart.getCartItems().stream().map(cartItem -> {
+                ProductDTO productDTO = modelMapper.map(cartItem.getProduct(), ProductDTO.class);
+                productDTO.setQuantity(cartItem.getQuantity()); // Set the quantity from CartItem
+                return productDTO;
+            }).collect(Collectors.toList());
+
+
+            cartDTO.setProducts(products);
+
+            return cartDTO;
+
+        }).toList();
+
+       return cartDTOs;
     }
 
     @Override
@@ -152,7 +159,9 @@ public class CartServiceImplementation  implements CartService{
         CartDTO cartDTO = modelMapper.map(cart,CartDTO.class);
 
         //set the quantity of that is set by the user dont show the stock quantiy ( this has to be implememted )
-        cart.getCartItems().forEach(item-> item.setQuantity(item.getQuantity()));//here done !!
+//        cart.getCartItems().forEach(item-> item.setQuantity(item.getQuantity()));//here done !!
+        cart.getCartItems().forEach(c ->
+                c.getProduct().setQuantity(c.getQuantity()));
 
 
         List<ProductDTO> products = cart.getCartItems().stream()

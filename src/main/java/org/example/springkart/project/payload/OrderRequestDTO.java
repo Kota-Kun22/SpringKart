@@ -8,13 +8,16 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddressDTO {
+public class OrderRequestDTO {
 
     private Long addressId;
-    private String street;
-    private String buildingName;
-    private String city;
-    private String state;
-    private String country;
-    private String pinCode;
+    private String paymentId;
+    private String pgName;
+    private String pgPaymentId;
+    private String pgStatus;
+    private String pgResponseMessage;
+
+
 }
+
+

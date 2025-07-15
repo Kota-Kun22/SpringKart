@@ -1,5 +1,6 @@
 package org.example.springkart.project.security.resposne;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,21 +14,22 @@ import java.util.List;
 public class UserInfoResponse {
 
     private Long id;
-    private String token;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String jwtToken;
 
     private String username;
     private List<String> roles;
 
-    public UserInfoResponse(Long id, String token, String username, List<String> roles) {
+    public UserInfoResponse(Long id, String username, List<String> roles, String jwtToken) {
         this.id = id;
-        this.token = token;
         this.username = username;
         this.roles = roles;
+        this.jwtToken = jwtToken;
     }
 
     public UserInfoResponse(Long id, String username, List<String> role) {
         this.id = id;
-        //this.token = token;
         this.roles = role;
         this.username = username;
     }

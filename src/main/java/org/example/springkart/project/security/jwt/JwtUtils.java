@@ -47,15 +47,15 @@ public class JwtUtils {
 
 
     //Getting the JWT Token from Header
-//    public String getJwtFromHeader(HttpServletRequest request)
-//    {
-//        String bearerToken = request.getHeader("Authorization");
-//        logger.info("Bearer Token: "+bearerToken);
-//        if(bearerToken != null && bearerToken.startsWith("Bearer ")) {
-//            return bearerToken.substring(7);//7 because Bearer and a space (Bearer ) total 7
-//        }
-//        return null;
-//    }
+    public String getJwtFromHeader(HttpServletRequest request)
+    {
+        String bearerToken = request.getHeader("Authorization");
+        logger.info("Bearer Token: "+bearerToken);
+        if(bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);//7 because Bearer and a space (Bearer ) total 7
+        }
+        return null;
+    }
 
     public String getJwtFromCookies(HttpServletRequest request){
 

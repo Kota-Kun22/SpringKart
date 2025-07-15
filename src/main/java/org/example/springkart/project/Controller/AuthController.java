@@ -78,8 +78,15 @@ public class AuthController {
         List<String> role= userDetails.getAuthorities().stream()
                 .map(item ->item.getAuthority())
                 .collect(Collectors.toList());
+        System.out.println("signin request: " + loginRequest);
 
-        UserInfoResponse resposne = new UserInfoResponse(userDetails.getId(),userDetails.getUsername(),role);
+        UserInfoResponse resposne = new UserInfoResponse(
+                userDetails.getId(),
+                userDetails.getUsername(),
+                role,
+                jwtUtils.generateTokenFromUserName(userDetails.getUsername())
+        );
+
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE,
                 JwtCookie.toString()).body(resposne);

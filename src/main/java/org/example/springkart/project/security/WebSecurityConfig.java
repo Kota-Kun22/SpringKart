@@ -80,7 +80,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()
                 .requestMatchers("/swagger-ui/**").permitAll()
-                //.requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/api/public/**").permitAll()
                 //.requestMatchers("/api/admin/**").permitAll()//has to be commented about when i will go for the production level
                 .requestMatchers("/api/test/**").permitAll()
                 .requestMatchers("/images/**").permitAll()

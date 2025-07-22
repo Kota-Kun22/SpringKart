@@ -34,6 +34,12 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException
     {
         logger.debug("AuthTokenFilter call for URI:{}", request.getRequestURI());
+
+        // ✅ CHANGE 1 — Skip JWT check if request is for /images/**
+        if (request.getRequestURI().startsWith("/images/")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         try{
             String jwt = parseJwt(request);
             if(jwt!= null && jwtUtils.validateJwtToken(jwt))

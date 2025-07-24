@@ -27,7 +27,7 @@ public class Product {
     @Size(min=3,message = "Product Name should be at least 3 characters")
     private String productName;
     @Size(min=10,message = "Product Description should be at least 10 characters")
-    private String productDescription;
+    private String description;
     private String image;
     private Integer quantity;
     private double price;

@@ -1,5 +1,6 @@
 package org.example.springkart.project.payload;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class ProductDTO {
     private Long productId;
     private String productName;
-    private String productDescription;
+    private String description;
     private String image;
     private Integer quantity;
     private double price;

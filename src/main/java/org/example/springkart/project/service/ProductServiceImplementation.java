@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -77,7 +78,7 @@ public class ProductServiceImplementation implements ProductService {
     }
 
     @Override
-    public ProductResponse getAllProducts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+    public ProductResponse getAllProducts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, String keyword, String category) {
 
         Sort sortByAndOrder;
         if (sortOrder.equalsIgnoreCase("asc")) {
@@ -85,9 +86,22 @@ public class ProductServiceImplementation implements ProductService {
         } else {
             sortByAndOrder = Sort.by(sortBy).descending();
         }
-        Pageable pageDetails= PageRequest.of(pageNumber-1, pageSize, sortByAndOrder);
+        Pageable pageDetails= PageRequest.of(pageNumber, pageSize, sortByAndOrder);
 
-        Page<Product> productPage= productRepository.findAll(pageDetails);
+        Specification<Product> spec =   Specification.where(null);
+        if (keyword != null && !keyword.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("productName")), "%" + keyword.toLowerCase() + "%"));
+        }
+
+        if (category != null && !category.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(root.get("category").get("categoryName"), category));
+        }
+
+
+
+        Page<Product> productPage= productRepository.findAll(spec,pageDetails);
         List<Product> productList= productPage.getContent();
         if(productList.isEmpty())
         {
@@ -137,7 +151,7 @@ public class ProductServiceImplementation implements ProductService {
         Pageable pageDetails= PageRequest.of(pageNumber-1, pageSize, sortByAndOrder);
 
 
-        Page<Product> productPage= productRepository.findByCategoryOrderByPriceAsc(category,pageDetails);
+        Page<Product> productPage= productRepository.findByCategoryOrderByPriceAsc(category, pageDetails);
 
 
         List<ProductDTO> productDtoList = productPage.stream()
@@ -195,7 +209,7 @@ public class ProductServiceImplementation implements ProductService {
         Product product = modelMapper.map(productDto, Product.class);
 
         productFromDb.setProductName(product.getProductName());
-        productFromDb.setProductDescription(product.getProductDescription());
+        productFromDb.setDescription(product.getDescription());
         productFromDb.setQuantity(product.getQuantity());
         productFromDb.setDiscount(product.getDiscount());
         productFromDb.setPrice(product.getPrice());
@@ -262,7 +276,7 @@ public class ProductServiceImplementation implements ProductService {
                 .orElseThrow(()-> new ResourceNotFoundException("Product","productId",productId));
         //Upload the image to the server/ in the /image folder
         // Get the file name of uploaded image
-        String path = "image/";//specifying path
+        String path = "images/";//specifying path
         String fileName= fileService.uploadImage(path,image);
         // update the new file name in the product object
         productFromDb.setImage(fileName);

@@ -44,7 +44,7 @@ public class CategoryServiceImplementation  implements CategoryService{
             sortByAndOrder = Sort.by(sortBy).descending();
         }
 
-        Pageable pageDetails= PageRequest.of(pageNumber-1,pageSize,sortByAndOrder);
+        Pageable pageDetails= PageRequest.of(pageNumber,pageSize,sortByAndOrder);
         Page<Category> categoryPage = categoryRepository.findAll(pageDetails);//here i have the apage which the user requsted with the pageNo and pagesize where categroyPage is the paginated object help by the jpa to get the page no and pgsize  ;
 
         List<Category> categoryList =categoryPage.getContent();//here get content will get he

@@ -34,15 +34,15 @@ public class CatergoryController {
      * with the help of Request mapping, I don't have to write the specific Mapping like get and post this is on method level
      * */
     @RequestMapping(value = "/public/categories",method = RequestMethod.GET)
-    public ResponseEntity<List<Category>> getAllCategory(
-            @RequestParam(name="pageNumber",defaultValue = AppConstants.PAGE_NUMBER)Integer pageNumber,
-            @RequestParam(name="pageSize",defaultValue = AppConstants.PAGE_SIZE)Integer pageSize,
-            @RequestParam(name="sort",defaultValue = AppConstants.SORT_BY)String sortBy,
-            @RequestParam(name="sortOrder",defaultValue = AppConstants.SORT_ORDER)String sortOrder
+    public ResponseEntity<CategoryResponse> getAllCategory(
+            @RequestParam(name="pageNumber",defaultValue = AppConstants.PAGE_NUMBER, required = false)Integer pageNumber,
+            @RequestParam(name="pageSize",defaultValue = AppConstants.PAGE_SIZE, required = false)Integer pageSize,
+            @RequestParam(name="sort",defaultValue = AppConstants.SORT_BY, required = false)String sortBy,
+            @RequestParam(name="sortOrder",defaultValue = AppConstants.SORT_ORDER, required = false)String sortOrder
     ){
 
         CategoryResponse categoriesResponse= categoryService.getAllCategory(pageNumber,pageSize,sortBy,sortOrder);
-       return  new ResponseEntity(categoriesResponse,HttpStatus.OK);
+       return  new ResponseEntity<>(categoriesResponse,HttpStatus.OK);
     }
 
     //@PostMapping("/api/public/categories")

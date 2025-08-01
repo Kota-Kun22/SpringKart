@@ -29,6 +29,13 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
 
         logger.error("Unauthorized error:{}",  authException.getMessage());
 
+
+        // ✅ Manually add CORS headers to prevent CORS preflight error on 401
+        response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 

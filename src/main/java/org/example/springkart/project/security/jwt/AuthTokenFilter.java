@@ -35,6 +35,15 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     {
         logger.debug("AuthTokenFilter call for URI:{}", request.getRequestURI());
 
+
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            logger.warn("✅ OPTIONS preflight request received, bypassing security");
+            response.setStatus(HttpServletResponse.SC_OK);
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+
         // ✅ CHANGE 1 — Skip JWT check if request is for /images/**
         if (request.getRequestURI().startsWith("/images/")) {
             filterChain.doFilter(request, response);
@@ -42,8 +51,14 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         }
         try{
             String jwt = parseJwt(request);
+
+            // ✅ Log the extracted JWT
+            System.out.println("🔍 Token from header or cookie = " + jwt);
+
             if(jwt!= null && jwtUtils.validateJwtToken(jwt))
             {
+                System.out.println("✅ Token is valid");
+
                 String UserName =   jwtUtils.getUserNameFromJwtToken(jwt);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(UserName);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
@@ -57,9 +72,14 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 logger.debug("Roles from JWT : {}",  authentication.getAuthorities());
 
             }
+            else {
+                System.out.println("❌ Token is null or invalid");
+            }
         }catch (Exception e)
         {
+            logger.error("❌ Cannot set user authentication: {}", e.getMessage());
             logger.error("can not set user authentication :{}",e.getMessage());
+            e.printStackTrace(); // Optional, but useful during dev
 
         }
         filterChain.doFilter(request, response);

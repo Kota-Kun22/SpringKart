@@ -1,8 +1,10 @@
 package org.example.springkart.project.Controller;
 
+import jakarta.transaction.Transactional;
 import org.apache.coyote.Response;
 import org.example.springkart.project.model.Cart;
 import org.example.springkart.project.payload.CartDTO;
+import org.example.springkart.project.payload.CartItemDTO;
 import org.example.springkart.project.repository.CartRepository;
 import org.example.springkart.project.service.CartService;
 import org.example.springkart.project.utils.AuthUtil;
@@ -66,6 +68,13 @@ public class CartController {
         return new ResponseEntity<String>(status,HttpStatus.OK);
     }
 
+    @Transactional
+    @PostMapping("/cart/create")
+    public ResponseEntity<String> createOrUpdateCart(@RequestBody List<CartItemDTO> cartItems)
+    {
+        String response = cartService.createOrUpdateCartWithItems(cartItems);
+        return new ResponseEntity<>(response,HttpStatus.CREATED);
+    }
 
 
 

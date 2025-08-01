@@ -77,6 +77,7 @@ public class JwtUtils {
                .path("/api")
                .maxAge(24*60*60)
                .httpOnly(false)
+               .secure(false)//have done only for local developement!!
                .build();
        return cookie;
     }
@@ -122,9 +123,11 @@ public class JwtUtils {
                     .verifyWith((SecretKey)key())
                     .build()
                     .parseSignedClaims(authToken);
+            System.out.println("✅ JWT is valid");
             return true;
         }catch (MalformedJwtException e)
         {
+            System.out.println("❌ Invalid JWT: " + e.getMessage());
             logger.error("invalid JWT Token");
 
         }catch (ExpiredJwtException e)

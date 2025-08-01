@@ -45,4 +45,11 @@ public class GlobalExceptionHandler {
         APIResponse apiResponse = new APIResponse(message,false);
         return new ResponseEntity<>(apiResponse,HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(InvalidPaymentException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidPayment(InvalidPaymentException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
 }

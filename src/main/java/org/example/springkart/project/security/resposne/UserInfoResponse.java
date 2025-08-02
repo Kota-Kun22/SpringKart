@@ -20,11 +20,13 @@ public class UserInfoResponse {
 
     private String username;
     private List<String> roles;
+    private String email;
 
-    public UserInfoResponse(Long id, String username, List<String> roles, String jwtToken) {
+    public UserInfoResponse(Long id, String username, List<String> roles, String email ,String jwtToken) {
         this.id = id;
         this.username = username;
         this.roles = roles;
+        this.email = email;
         this.jwtToken = jwtToken;
     }
 
@@ -33,4 +35,6 @@ public class UserInfoResponse {
         this.roles = role;
         this.username = username;
     }
+
+
 }

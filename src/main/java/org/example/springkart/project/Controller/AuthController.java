@@ -84,6 +84,7 @@ public class AuthController {
                 userDetails.getId(),
                 userDetails.getUsername(),
                 role,
+                userDetails.getEmail(),
                 jwtUtils.generateTokenFromUserName(userDetails.getUsername())
         );
 

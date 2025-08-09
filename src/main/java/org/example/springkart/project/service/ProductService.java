@@ -21,4 +21,6 @@ public interface ProductService {
     ProductDTO deleteProduct(Long productId);
 
     ProductDTO updateProductImage(Long productId, MultipartFile image) throws IOException;
+
+    ProductResponse getAllProductsForAdmin(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
 }

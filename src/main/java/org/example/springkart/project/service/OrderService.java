@@ -2,6 +2,7 @@ package org.example.springkart.project.service;
 
 import jakarta.transaction.Transactional;
 import org.example.springkart.project.payload.OrderDTO;
+import org.example.springkart.project.payload.OrderResponse;
 
 public interface OrderService {
 
@@ -12,6 +13,7 @@ public interface OrderService {
                         String pgResponseMessage);
 
 
+    OrderResponse getAllOrders(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
 
-
+    OrderDTO updateOrder( Long orderId, String status);
 }

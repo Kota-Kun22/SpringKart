@@ -46,7 +46,7 @@ public class CatergoryController {
     }
 
     //@PostMapping("/api/public/categories")
-    @RequestMapping(value = "/public/categories",method = RequestMethod.POST)
+    @RequestMapping(value = "/admin/categories",method = RequestMethod.POST)
     public ResponseEntity<CategoryDTO> createCategory( @Valid @RequestBody CategoryDTO categoryDto){
 
 

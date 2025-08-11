@@ -47,4 +47,8 @@ public class Product {
     @OneToMany(mappedBy = "product",cascade = { CascadeType.PERSIST,CascadeType.MERGE},fetch = FetchType.EAGER)//mapped by is actually by the field name okay go check in the cartItem there will be product field name
     private List<CartItem> products= new ArrayList<>();
 
+    // Add this relationship
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> orderItems = new ArrayList<>();
+
 }

@@ -5,6 +5,8 @@ import org.example.springkart.project.model.AppRole;
 import org.example.springkart.project.model.Role;
 import org.example.springkart.project.model.User;
 import org.example.springkart.project.payload.AuthenticationResult;
+import org.example.springkart.project.payload.UserDTO;
+import org.example.springkart.project.payload.UserResponse;
 import org.example.springkart.project.repository.RoleRepository;
 import org.example.springkart.project.repository.UserRepository;
 import org.example.springkart.project.security.jwt.JwtUtils;
@@ -13,7 +15,10 @@ import org.example.springkart.project.security.request.SignupRequest;
 import org.example.springkart.project.security.resposne.MessageResponse;
 import org.example.springkart.project.security.resposne.UserInfoResponse;
 import org.example.springkart.project.security.services.UserDetailsImpl;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -38,9 +43,10 @@ public class AuthServiceImplementation  implements AuthService{
     private UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
-
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private ModelMapper modelMapper;
 
 
     @Override
@@ -158,6 +164,28 @@ public class AuthServiceImplementation  implements AuthService{
         }else{
             return " ";
         }
+    }
+
+    @Override
+    public UserResponse getAllSellers(Pageable pageDetails) {
+
+        Page<User> allUsers=
+                userRepository.findByRoleName(AppRole.ROLE_SELLER,pageDetails);
+
+        List<UserDTO> userDtos= allUsers.getContent()
+                .stream()
+                .map(p-> modelMapper.map(p,UserDTO.class))
+                .toList();
+
+        UserResponse response = new UserResponse();
+        response.setContent(userDtos);
+        response.setPageNumber(allUsers.getNumber()+1);
+        response.setPageSize(allUsers.getSize());
+        response.setTotalElements(allUsers.getTotalElements());
+        response.setTotalPages(allUsers.getTotalPages());
+        response.setLastPage(allUsers.isLast());
+
+        return response;
     }
 
 

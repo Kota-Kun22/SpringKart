@@ -2,10 +2,12 @@ package org.example.springkart.project.Controller;
 
 
 import jakarta.validation.Valid;
+import org.example.springkart.project.config.AppConstants;
 import org.example.springkart.project.model.AppRole;
 import org.example.springkart.project.model.Role;
 import org.example.springkart.project.model.User;
 import org.example.springkart.project.payload.AuthenticationResult;
+import org.example.springkart.project.payload.UserResponse;
 import org.example.springkart.project.repository.RoleRepository;
 import org.example.springkart.project.repository.UserRepository;
 import org.example.springkart.project.security.jwt.JwtUtils;
@@ -16,6 +18,9 @@ import org.example.springkart.project.security.resposne.UserInfoResponse;
 import org.example.springkart.project.security.services.UserDetailsImpl;
 import org.example.springkart.project.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -94,6 +99,16 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE,cookie.toString())
                 .body(new MessageResponse("Successfully signed out"));
+    }
+
+    @GetMapping("/sellers")
+    public ResponseEntity<UserResponse> getAllSellers(
+            @RequestParam (name= "pageNumber",defaultValue = AppConstants.PAGE_NUMBER,required = false)Integer pageNumber){
+
+        Sort sortByAndOrder = Sort.by(AppConstants.SORT_USERS_BY).descending();
+        Pageable pageDetails= PageRequest.of(pageNumber,Integer.parseInt(AppConstants.PAGE_SIZE),sortByAndOrder);
+        return ResponseEntity.ok(authService.getAllSellers(pageDetails));
+
     }
 
 

@@ -90,6 +90,8 @@ public class WebSecurityConfig {
                 .requestMatchers("/v3/api-docs/**").permitAll()
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")//spring sec will automatically apend ROLE_ prefix to the role name
+                .requestMatchers("/api/seller/**").hasAnyRole("SELLER", "ADMIN")
                 //.requestMatchers("/api/admin/**").permitAll()//has to be commented about when i will go for the production level
                 .requestMatchers("/api/test/**").permitAll()
                 .requestMatchers("/images/**").permitAll()

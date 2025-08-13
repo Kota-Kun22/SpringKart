@@ -27,6 +27,12 @@ public class ProductController {
       ProductDTO savedProductDTO= productService.addProduct(productDto,categoryId);
       return new ResponseEntity<>(savedProductDTO, HttpStatus.CREATED);
     }
+    @PostMapping("/seller/categories/{categoryId}/product")
+    public ResponseEntity<ProductDTO> addProductSeller(@Valid  @RequestBody ProductDTO productDto, @PathVariable Long categoryId){
+
+        ProductDTO savedProductDTO= productService.addProduct(productDto,categoryId);
+        return new ResponseEntity<>(savedProductDTO, HttpStatus.CREATED);
+    }
 
     @GetMapping("/public/product")
     public ResponseEntity<ProductResponse> getProductById(
@@ -100,6 +106,17 @@ public class ProductController {
             @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_ORDER, required = false) String sortOrder
     ){
         ProductResponse productResponse = productService.getAllProductsForAdmin(pageNumber, pageSize, sortBy, sortOrder);
+        return new ResponseEntity<>(productResponse,HttpStatus.OK);
+    }
+
+    @GetMapping("/seller/products")
+    public ResponseEntity<ProductResponse> getAllProductsForSeller(
+            @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+            @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam(name = "sortBy", defaultValue = AppConstants.PRODUCT_SORT_BY, required = false) String sortBy,
+            @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_ORDER, required = false) String sortOrder
+    ){
+        ProductResponse productResponse = productService.getAllProductsForSeller(pageNumber, pageSize, sortBy, sortOrder);
         return new ResponseEntity<>(productResponse,HttpStatus.OK);
     }
 

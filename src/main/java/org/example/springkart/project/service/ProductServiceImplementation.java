@@ -5,12 +5,14 @@ import org.example.springkart.project.exception.ResourceNotFoundException;
 import org.example.springkart.project.model.Cart;
 import org.example.springkart.project.model.Category;
 import org.example.springkart.project.model.Product;
+import org.example.springkart.project.model.User;
 import org.example.springkart.project.payload.CartDTO;
 import org.example.springkart.project.payload.ProductDTO;
 import org.example.springkart.project.payload.ProductResponse;
 import org.example.springkart.project.repository.CartRepository;
 import org.example.springkart.project.repository.CategoryRepository;
 import org.example.springkart.project.repository.ProductRepository;
+import org.example.springkart.project.utils.AuthUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,6 +43,8 @@ public class ProductServiceImplementation implements ProductService {
     CartRepository cartRepository;
     @Autowired
     CartService cartService;
+    @Autowired
+    AuthUtil authUtil;
 
 
     @Value("${project.image}")
@@ -66,6 +70,7 @@ public class ProductServiceImplementation implements ProductService {
         if(isProductNotPresent) {
             Product product = modelMapper.map(productDto, Product.class);
             product.setCategory(category);
+            product.setUser(authUtil.loggedInUser());
             product.setImage("default.png");
             double specialPrice = product.getPrice() - ((product.getDiscount() * 0.01) * product.getPrice());
             product.setSpecialPrice(specialPrice);
@@ -315,6 +320,37 @@ public class ProductServiceImplementation implements ProductService {
         productResponse.setTotalPages(pageProducts.getTotalPages());
         productResponse.setLastPage(pageProducts.isLast());
         return productResponse;
+    }
+
+    @Override
+    public ProductResponse getAllProductsForSeller(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
+        User user = authUtil.loggedInUser();
+        Page<Product> pageProducts = productRepository.findByUser(user,pageDetails);
+
+        List<Product> products = pageProducts.getContent();
+
+        List<ProductDTO> productDTOS = products.stream()
+                .map(product -> {
+                    ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
+                    productDTO.setImage(constructImageUrl(product.getImage()));
+                    return productDTO;
+                })
+                .toList();
+
+        ProductResponse productResponse = new ProductResponse();
+        productResponse.setContent(productDTOS);
+        productResponse.setPageNumber(pageProducts.getNumber());
+        productResponse.setPageSize(pageProducts.getSize());
+        productResponse.setTotalElements(pageProducts.getTotalElements());
+        productResponse.setTotalPages(pageProducts.getTotalPages());
+        productResponse.setLastPage(pageProducts.isLast());
+        return productResponse;
+
     }
 
 
